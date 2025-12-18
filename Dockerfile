@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=build /app/target/release/actix-app /app/server
+COPY --from=build /app/target/release/axum-app /app/server
 EXPOSE 8080
 CMD ["/app/server"]
 

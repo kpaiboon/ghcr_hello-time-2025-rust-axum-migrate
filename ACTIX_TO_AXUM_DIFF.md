@@ -291,6 +291,23 @@ pub struct Person {
 
 ---
 
+## 6. Dockerfile
+
+### Actix Web
+```dockerfile
+COPY --from=build /app/target/release/actix-app /app/server
+```
+
+### Axum
+```dockerfile
+COPY --from=build /app/target/release/axum-app /app/server
+```
+
+**Key Changes:**
+- Binary name changed from `actix-app` to `axum-app` (matches Cargo.toml package name)
+
+---
+
 ## Migration Checklist
 
 - [x] Update dependencies in Cargo.toml
@@ -303,3 +320,4 @@ pub struct Person {
 - [x] Add `Clone` to shared data structures
 - [x] Replace `env_logger` with `tracing`
 - [x] Update middleware from `.wrap()` to `.layer()`
+- [x] Update Dockerfile binary name from `actix-app` to `axum-app`

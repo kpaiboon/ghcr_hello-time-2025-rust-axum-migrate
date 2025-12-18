@@ -39,20 +39,19 @@ networks:
 
 
 #
-# 📝 Proxy Host Configuration: rust-hello.domain.xxx
+# 📝 Proxy Host Configuration: rust-hello.olive.co.th
 # 🔧 General Settings
-# Domain Names: rust-hello.domain.xxx
+# Domain Names: rust-hello.olive.co.th
 # Scheme: http
 # Forward Hostname / IP: rust-hello-time
 # Forward Port: 8080
 # Access List: Publicly Accessible
 # 🔐 SSL Settings
-# SSL Certificate: rust-hello.domain.xxx
+# SSL Certificate: rust-hello.olive.co.th
 # Force SSL: ✅ (แนะนำให้เปิด)
 # HTTP/2 Support: ✅ (ถ้ามีให้เลือก)
 # see cpu and mem usages or load testing tool
 # sudo docker stats
-
 
 
 
