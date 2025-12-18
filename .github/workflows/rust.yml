@@ -1,0 +1,65 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main # Or your main branch name
+      - '*' # This will trigger on all branches    
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Update Rust toolchain
+        run: rustup update
+
+      - name: Build the application
+        run: cargo build --release
+
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | sed -e 's/[^a-zA-Z0-9]/-/g')
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/rusty-webserver:${BRANCH_NAME}
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+  # Optional: Trigger Portainer CE webhook via Marketplace Action
+  #Prerequisites:
+  #GitHub, navigate to the main page of the repository.
+  #== Click  Settings  ==
+  #In the "Security" section of the sidebar, select  Secrets and variables, then 
+  #== Click Actions (secrets and variables) ==
+  #== Click the Secrets tab.
+  #  PORTAINER_SERVICE_WEBHOOK_URL = https://__domain__portainer__/api/webhooks/__service__token__
+  #== Click the Variables tab.
+  #  USE_WEBHOOKS = true
+  #===========
+  webhook-deployment-trigger-portainer-ce:
+    needs: build-and-push   # Ensure this matches your build job ID
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && vars.USE_WEBHOOKS == 'true' }}
+    steps:
+      - name: Update Portainer service via webhook (action)
+        uses: newarifrh/portainer-service-webhook@v1
+        with:
+          webhook_url: ${{ secrets.PORTAINER_SERVICE_WEBHOOK_URL }}
+      - name: Verify deployment
+        run: |
+          echo "Deployment webhook triggered successfully"
+          echo "Service should be updating in Portainer"
+
