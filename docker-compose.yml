@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  rusty-webserver:
+    image: ghcr.io/olive-techno/ghcr_hello-time/rusty-webserver:main
+    restart: unless-stopped
+    deploy:
+      replicas: 2    
+    logging:
+      driver: json-file
+      options:
+        max-file: 5
+        max-size: 15m    
+    ports:
+      - "3030:8080"
+    environment:
+      - GREETING_TEXT="Hello_world2025!"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+## Deploy in Detached Mode (Run Containers in Background)
+# docker-compose up -d

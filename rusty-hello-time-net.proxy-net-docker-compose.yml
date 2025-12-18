@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  rust-hello-time:
+    image: ghcr.io/olive-techno/ghcr_hello-time/rusty-webserver:main
+    deploy:
+      mode: replicated
+      replicas: 2
+      #placement: # if choosen one of node
+        #constraints: 
+          #- "node.role == manager"   # manager or worker
+      resources:         
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+          
+    networks:
+      - proxy-net
+    ports:
+      - target: 8080
+        published: 8125
+        protocol: tcp
+        mode: ingress
+    environment:
+      - GREETING_TEXT="Hi rabbit!"        
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  proxy-net:
+    external: true
+
+
+#
+# 📝 Proxy Host Configuration: rust-hello.olive.co.th
+# 🔧 General Settings
+# Domain Names: rust-hello.olive.co.th
+# Scheme: http
+# Forward Hostname / IP: rust-hello-time
+# Forward Port: 8080
+# Access List: Publicly Accessible
+# 🔐 SSL Settings
+# SSL Certificate: rust-hello.olive.co.th
+# Force SSL: ✅ (แนะนำให้เปิด)
+# HTTP/2 Support: ✅ (ถ้ามีให้เลือก)
+# see cpu and mem usages or load testing tool
+# sudo docker stats
+
+
+
